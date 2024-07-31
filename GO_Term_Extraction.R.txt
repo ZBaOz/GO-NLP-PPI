@@ -1,0 +1,161 @@
+install.packages("xlsx")
+library(xlsx)
+
+install.packages("writexl")
+library("writexl")
+
+setwd("../Veriler")
+pozitifProteinler <- read.xlsx(file = 'Proteinler.xlsx', 1, header=TRUE)
+
+humanProtein=as.character(as.vector(pozitifProteinler[,2]))
+
+#GO terms are extracted using "GetProteinGOInfo" function in uniprotr library
+install.packages("UniprotR")
+library("UniprotR")
+
+#stringr library for regex
+#install.packages("stringr")
+library("stringr")
+
+#package for parent GO terms
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("GOfuncR")
+library(GOfuncR)
+install.packages("get_parent_nodes")
+
+proteinSayi=length(humanProtein)
+
+#PARENT GO TERMS FOR POSITIVE PROTEINS
+GOObj<-GetProteinGOInfo(humanProtein[1])
+x=str_extract_all(GOObj$Gene.ontology..biological.process,"GO:[0-9]+")
+x=unlist(x,use.names=F)
+parents = get_parent_nodes(x)
+BPParents=parents[,2]
+BPGOTerms=x
+
+x2=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+x2=unlist(x2,use.names=F)
+parents2 = get_parent_nodes(x2)
+MFParents=parents2[,2]
+MFGOTerms=x2
+
+x3=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+x3=unlist(x3,use.names=F)
+parents3 = get_parent_nodes(x3)
+CCParents=parents3[,2]
+CCGOTerms=x3
+
+for (i in 2:proteinSayi)
+{
+  GOObj<-GetProteinGOInfo(humanProtein[i])
+  if (is.na(GOObj$Gene.ontology..biological.process))
+  {
+    print(i)
+    print("No BP terms")
+  }
+  else
+  {
+    x=str_extract_all(GOObj$Gene.ontology..biological.process,"GO:[0-9]+")
+    x=unlist(x,use.names=F)
+    BPGOTerms=c(BPGOTerms,x)
+    parents = get_parent_nodes(x)
+    BPParents=c(BPParents,parents[,2])
+  }
+  if (is.na(GOObj$Gene.ontology..molecular.function.))
+  {
+    print(i)
+    print("No MF terms")
+  }
+  else
+  {
+    x2=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+    x2=unlist(x2,use.names=F)
+    MFGOTerms=c(MFGOTerms,x2)
+    parents2 = get_parent_nodes(x2)
+    MFParents=c(MFParents,parents2[,2])
+  }
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print(i)
+    print("No CC terms")
+  }
+  else
+  {
+    x3=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    x3=unlist(x3,use.names=F)
+    CCGOTerms=c(CCGOTerms,x3)
+    parents3 = get_parent_nodes(x3)
+    CCParents=c(CCParents,parents3[,2])
+  }
+}
+
+#There are 4533 unique BP parent GO terms.
+BPParents<-unique(BPParents)
+##There are 812 unique MF parent GO terms.
+MFParents<-unique(MFParents)
+##There are 632 unique CC parent GO terms.
+CCParents<-unique(CCParents)
+
+
+#GO TERM EXTRAXTION for NEGATIVE PROTEINS
+negatifProteinler <- read.xlsx(file = 'negatifData.xlsx', 2, header=TRUE)
+negatifProtein=as.character(as.vector(negatifProteinler[,1]))
+
+for (i in 1:proteinSayi)
+{
+  GOObj<-GetProteinGOInfo(negatifProtein[i])
+  if (is.na(GOObj$Gene.ontology..biological.process))
+  {
+    print(i)
+    print("No BP term")
+  }
+  else
+  {
+    x=str_extract_all(GOObj$Gene.ontology..biological.process,"GO:[0-9]+")
+    x=unlist(x,use.names=F)
+    BPGOTerms=c(BPGOTerms,x)
+    parents = get_parent_nodes(x)
+    BPParents=c(BPParents,parents[,2])
+  }
+  if (is.na(GOObj$Gene.ontology..molecular.function.))
+  {
+    print(i)
+    print("No MF term")
+  }
+  else
+  {
+    x2=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+    x2=unlist(x2,use.names=F)
+    MFGOTerms=c(MFGOTerms,x2)
+    parents2 = get_parent_nodes(x2)
+    MFParents=c(MFParents,parents2[,2])
+  }
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print(i)
+    print("No CC term")
+  }
+  else
+  {
+    x3=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    x3=unlist(x3,use.names=F)
+    CCGOTerms=c(CCGOTerms,x3)
+    parents3 = get_parent_nodes(x3)
+    CCParents=c(CCParents,parents3[,2])
+  }
+}
+#There are 6178 unique BP parent GO terms. 
+BPParents<-unique(BPParents)
+BPGOTerms<-unique(BPGOTerms)
+
+#There are 1088 unique MF parent GO terms. 
+MFParents<-unique(MFParents)
+MFGOTerms<-unique(MFGOTerms)
+
+#There are 861 unique CC parent GO terms. 
+CCParents<-unique(CCParents)
+CCGOTerms<-unique(CCGOTerms)
+
+
+
