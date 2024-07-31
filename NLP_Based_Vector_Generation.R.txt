@@ -1,0 +1,426 @@
+#BAG OF WORD MATRIX GENERATION
+Proteinler=c(humanProtein,negatifProtein)
+BPBoW=matrix(0,nrow=664,ncol=length(BPParents))
+colnames(BPBoW) = BPParents
+BPBoW=cbind(Proteinler,BPBoW)
+
+MFBoW=matrix(0,nrow=664,ncol=length(MFParents))
+colnames(MFBoW) = MFParents
+MFBoW=cbind(Proteinler,MFBoW)
+
+CCBoW=matrix(0,nrow=664,ncol=length(CCParents))
+colnames(CCBoW) = t(CCParents)
+CCBoW=cbind(Proteinler,CCBoW)
+dim(CCBoW)
+
+for (i in 1:664)
+{
+  print (i)
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..biological.process))
+  {
+    print ("NONE")
+  }
+  else
+  {
+    x=str_extract_all(GOObj$Gene.ontology..biological.process.,"GO:[0-9]+")
+    x=unlist(x,use.names=F)
+    parents = get_parent_nodes(x)
+    for (j in 1:nrow(parents))
+    {
+      y=parents[j,2]
+      sira=which(BPParents == y)
+      if (length(sira)>0)
+      {
+        BPBoW[i,sira+1]=1
+        print (BPBoW[i,sira+1])
+      }
+    }
+  }
+
+  if (is.na(GOObj$Gene.ontology..molecular.function.))
+  {
+    print ("NONE")
+  }
+  else
+  {
+    x2=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+    x2=unlist(x2,use.names=F)
+    parents2 = get_parent_nodes(x2)
+    for (j in 1:nrow(parents2))
+    {
+      y2=parents2[j,2]
+      sira2=which(MFParents == y2)
+      if (length(sira2)>0)
+      {
+        MFBoW[i,sira2+1]=1
+        print (MFBoW[i,sira2+1])
+      }
+    }
+  }
+  
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print ("NONE")
+  }
+  else
+  {
+    x3=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    x3=unlist(x3,use.names=F)
+    parents3 = get_parent_nodes(x3)
+    for (j in 1:nrow(parents3))
+    {
+      y3=parents3[j,2]
+      sira3=which(CCParents == y3)
+      if (length(sira3)>0)
+      {
+        CCBoW[i,sira3+1]=1
+        print (CCBoW[i,sira3+1])
+      }
+    }
+  }
+}
+
+
+BPBoW <- data.frame(BPBoW)
+
+MFBoW <- data.frame(MFBoW)
+
+CCBoW <- data.frame(CCBoW)
+
+
+
+#COUNT MATRIX GENERATION
+Proteinler=c(humanProtein,negatifProtein)
+
+BPCount=matrix(nrow=664,ncol=length(BPParents))
+colnames(BPCount) = BPParents
+BPCount=cbind(Proteinler,BPCount)
+BPCount <- data.frame(BPCount)
+BPCount[,]<- 0
+
+MFCount=matrix(nrow=664,ncol=length(MFParents))
+colnames(MFCount) = MFParents
+MFCount=cbind(Proteinler,MFCount)
+MFCount <- data.frame(MFCount)
+MFCount[,]<- 0
+
+CCCount=matrix(nrow=664,ncol=length(CCParents))
+colnames(CCCount) = CCParents
+CCCount=cbind(Proteinler,CCCount)
+CCCount <- data.frame(CCCount)
+CCCount[,]<- 0
+
+
+for (i in 1:664)
+{
+  print (i)
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  # if (is.na(GOObj$Gene.ontology..biological.process))
+  # {
+  #   print ("NONE")
+  # }
+  # else
+  # {
+  #   x=str_extract_all(GOObj$Gene.ontology..biological.process.,"GO:[0-9]+")
+  #   x=unlist(x,use.names=F)
+  #   parents = get_parent_nodes(x)
+  #   for (j in 1:nrow(parents))
+  #   {
+  #     y=parents[j,2]
+  #     sira=which(BPParents == y)
+  #     if (length(sira)>0)
+  #     {
+  #       BPCount[i,sira+1]=BPCount[i,sira+1]+1
+  #       print (BPCount[i,sira+1])
+  #     }
+  #   }
+  # }
+  
+  # if (is.na(GOObj$Gene.ontology..molecular.function.))
+  # {
+  #   print ("NONE")
+  # }
+  # else
+  # {
+  #   x2=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+  #   x2=unlist(x2,use.names=F)
+  #   parents2 = get_parent_nodes(x2)
+  #   for (j in 1:nrow(parents2))
+  #   {
+  #     y2=parents2[j,2]
+  #     sira2=which(MFParents == y2)
+  #     if (length(sira2)>0)
+  #     {
+  #       MFCount[i,sira2+1]=MFCount[i,sira2+1]+1
+  #       print (MFCount[i,sira2+1])
+  #     }
+  #   }
+  # }
+
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print ("NONE")
+  }
+  else
+  {
+    x3=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    x3=unlist(x3,use.names=F)
+    parents3 = get_parent_nodes(x3)
+    j=1
+    for (j in 1:nrow(parents3))
+    {
+      y3=parents3[j,2]
+      sira3=which(CCParents == y3)
+      if (length(sira3)>0)
+      {
+        CCCount[i,(sira3+1)]=CCCount[i,(sira3+1)]+1
+        print (CCCount[i,sira3+1])
+      }
+    }
+  }
+}
+
+BPCount <- data.frame(BPCount)
+MFCount <- data.frame(MFCount)
+CCCount <- data.frame(CCCount)
+
+
+#TF-IDF MATRIX GENERATION
+BPtfIdf=matrix(nrow=664,ncol=length(BPParents))
+colnames(BPtfIdf) = BPParents
+BPtfIdf=cbind(Proteinler,BPtfIdf)
+BPtfIdf <- data.frame(BPtfIdf)
+BPtfIdf[,]<- 0
+
+for (i in 1:664)
+{
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..biological.process))
+  {
+    print ("No BP")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..biological.process.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    pr = get_parent_nodes(GOTerms)
+    terimSayi=length(pr)
+    k=2
+    for (j in 1:length(BPParents))
+    {
+      tf=BPCount[i,k]/terimSayi
+      idf=664/(length(which(BPBoW[,k]==1)))
+      idf=log(idf)
+      BPtfIdf[i,k]=tf*idf
+      k=k+1
+    }
+  }
+}
+
+MFtfIdf=matrix(nrow=664,ncol=length(MFParents))
+colnames(MFtfIdf) = MFParents
+MFtfIdf=cbind(Proteinler,MFtfIdf)
+MFtfIdf <- data.frame(MFtfIdf)
+MFtfIdf[,]<- 0
+
+for (i in 1:664)
+{
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..molecular.function.))
+  {
+    print ("No MF")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    pr = get_parent_nodes(GOTerms)
+    terimSayi=length(pr)
+    k=2
+    for (j in 1:length(MFParents))
+    {
+      tf=MFCount[i,k]/terimSayi
+      idf=664/(length(which(MFBoW[,k]==1)))
+      idf=log(idf)
+      MFtfIdf[i,k]=tf*idf
+      k=k+1
+    }
+  }
+}
+
+
+CCtfIdf=matrix(nrow=664,ncol=length(CCParents))
+colnames(CCtfIdf) = CCParents
+CCtfIdf=cbind(Proteinler,CCtfIdf)
+CCtfIdf <- data.frame(CCtfIdf)
+CCtfIdf[,]<- 0
+
+for (i in 1:664)
+{
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print ("No CC")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    pr = get_parent_nodes(GOTerms)
+    terimSayi=length(pr)
+    k=2
+    for (j in 1:length(CCParents))
+    {
+      tf=CCCount[i,k]/terimSayi
+      idf=664/(length(which(CCBoW[,k]==1)))
+      idf=log(idf)
+      CCtfIdf[i,k]=tf*idf
+      k=k+1
+    }
+  }
+}
+
+BPtfIdf <- data.frame(BPtfIdf)
+MFtfIdf <- data.frame(MFtfIdf)
+CCtfIdf <- data.frame(CCtfIdf)
+
+
+
+
+#INFORMATION CONTENT MATRIX GENERATION
+Proteinler=c(humanProtein,negatifProtein)
+install.packages("protr")
+library("protr")
+install.packages("rlist")
+library("rlist")
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("GOSemSim")
+library(GOSemSim)
+hsGO <- godata('org.Hs.eg.db', ont="BP")
+hsGO2 <- godata('org.Hs.eg.db', ont="MF")
+hsGO3 <- godata('org.Hs.eg.db', ont="CC")
+
+
+BPInfCont=matrix(nrow=664,ncol=length(BPParents))
+colnames(BPInfCont) = BPParents
+BPInfCont <- data.frame(BPInfCont)
+BPInfCont[,]<- 0
+BPInfCont=cbind(Proteinler,BPInfCont)
+
+#BMA=best-match average
+
+
+for (i in 1:664)
+{
+  print("Protein")
+  print (i)
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..biological.process))
+  {
+    print(i)
+    print ("No GO term")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..biological.process.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    for (j in 1:4200)#length(BPParents)
+    {
+      goParent=BPParents[j]
+      benzerlik=mgoSim(GOTerms, goParent, semData=hsGO, measure="Jiang", combine="BMA")
+      #benzerlik=twoGOSim(GOTerms, goParent, type = "go", ont = "BP", measure = "Jiang", combine = "BMA")
+      if (is.na(benzerlik))
+        print("no similarity")
+      else
+      {
+        BPInfCont[i,j+1]=benzerlik
+        print("Parent")
+        print(j)
+      }
+    }
+    write_xlsx(BPInfCont,"../BPInfCont.xlsx")
+  }
+}
+
+MFInfCont=matrix(nrow=664,ncol=length(MFParents))
+colnames(MFInfCont) = MFParents
+MFInfCont=cbind(Proteinler,MFInfCont)
+MFInfCont <- data.frame(MFInfCont)
+MFInfCont[,]<- 0
+
+for (i in 1:664)
+{
+  print("Protein")
+  print (i)
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  if (is.na(GOObj$Gene.ontology..molecular.function.))
+  {
+    print ("No GO term")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..molecular.function.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    
+    for (j in 1:length(MFParents))
+    {
+      goParent=MFParents[j]
+      benzerlik=mgoSim(GOTerms, goParent, semData=hsGO2, measure="Jiang", combine="BMA")
+      if (is.na(benzerlik))
+        print("no similarity")
+      else
+      {
+        MFInfCont[i,j+1]=benzerlik
+        print("Parent")
+        print(j)
+      }
+    }
+    write_xlsx(MFInfCont,"../MFInfCont.xlsx")
+  }
+}
+
+
+CCInfCont=matrix(nrow=664,ncol=length(CCParents))
+colnames(CCInfCont) = CCParents
+CCInfCont=cbind(Proteinler,CCInfCont)
+CCInfCont <- data.frame(CCInfCont)
+CCInfCont[,]<- 0
+
+for (i in 1:664)
+{
+  print("Protein")
+  print (i)
+  GOObj<-GetProteinGOInfo(Proteinler[i])
+  #GOObj<-GetProteinGOInfo(Proteinler[5])
+  if (is.na(GOObj$Gene.ontology..cellular.component.))
+  {
+    print ("No CC term")
+  }
+  else
+  {
+    GOTerms=str_extract_all(GOObj$Gene.ontology..cellular.component.,"GO:[0-9]+")
+    GOTerms=unlist(GOTerms,use.names=F)
+    
+    for (j in 1:length(CCParents))
+    {
+      goParent=CCParents[j]
+      benzerlik=mgoSim(GOTerms, goParent, semData=hsGO3, measure="Jiang", combine="BMA")
+      if (is.na(benzerlik))
+      {
+        print("no similarity")
+        print(j)
+      }
+      else
+      {
+        CCInfCont[i,j+1]=benzerlik
+        print("Parent")
+        print(j)
+      }
+    }
+    write_xlsx(CCInfCont,"../CCInfCont.xlsx")
+  }
+}
